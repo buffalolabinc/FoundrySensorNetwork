@@ -133,7 +133,6 @@ class TwitterEventThread(TaskThread.TaskThread):
 				"""
 				print 'Exception in Twitter Thread'
 				print 'Error:', sys.exc_info()[0]
-				raise
 			else:
 				print 'No Exception in Twitter Thread'
 
@@ -173,11 +172,6 @@ if __name__ == '__main__':
 	TwitterAccessToken = data['AccessToken']
 	TwitterAccessTokenSecret = data['AccessTokenSecret']
 
-	print TwitterConsumerKey
-	print TwitterConsumerSecret
-	print TwitterAccessToken
-	print TwitterAccessTokenSecret
-
 	# get the sparkfun Credentials
 	json_data = open(SparkFunCredentialFile)
 	data = json.load(json_data)
@@ -186,10 +180,6 @@ if __name__ == '__main__':
 	SparkFunPublicKey = data['publicKey']
 	SparkFunPrivateKey = data['privateKey']
 
-	print SparkFunPublicKey
-	print SparkFunPrivateKey
-
-	sys.exit()
 	# Hook up to zigbee network over the serial port
 	xbee = ZigBee(serialPort, escaped=True, callback=processXBeeData)
 
