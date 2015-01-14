@@ -1,0 +1,109 @@
+<html>
+  <head>
+  	<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <!-- EXTERNAL LIBS-->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
+    <script src="https://www.google.com/jsapi"></script>
+
+    <!-- EXAMPLE SCRIPT -->
+    <script>
+      // load libs
+      google.load('visualization', '1.1', { packages: ['gauge', 'bar', 'corechart'] });
+
+      // call drawGauge once google charts is loaded
+      google.setOnLoadCallback(drawBoth);
+
+      // onload callback
+      function drawBoth() {
+		  drawLineChart();
+		  drawGauge();
+	  }
+
+      // do the line chart
+      function drawLineChart() {
+
+        var public_key = 'WGqzXY7GDVS7wv3vzlVV';
+
+		var options = {
+            title: 'Last 24 Hours',
+		    titleTextStyle: { fontSize : 20 },
+			chartArea: {left:50, top:40, width: '50%', height : '75%'},
+			curveType: 'function',
+			dataOpacity : 1.0
+		};
+
+        // JSONP request
+        var jsonData = $.ajax({
+          url: 'https://data.sparkfun.com/output/' + public_key + '.json',
+          data: {limit: 144, sample:2},
+          dataType: 'jsonp',
+        }).done(function (results) {
+
+          var data = new google.visualization.DataTable();
+
+          data.addColumn('datetime', 'Time');
+          data.addColumn('number', 'Zone 0');
+          data.addColumn('number', 'Zone 1');
+
+          $.each(results, function (i, row) {
+            data.addRow([
+              (new Date(row.timestamp)),
+              parseFloat(row.z0temp0),
+              parseFloat(row.z0temp0)
+            ]);
+          });
+
+//          var LineChart = new google.visualization.LineChart($('#linechart').get(0));
+          var LineChart = new google.visualization.LineChart(document.getElementById('linechart'));
+
+          LineChart.draw(data, options);
+
+        });
+
+      }
+
+      // do the gauges
+      function drawGauge() {
+
+        var public_key = 'WGqzXY7GDVS7wv3vzlVV';
+
+		var options = {
+			width: 1000, height: 300,
+			min: 30, max: 110,
+			redFrom: 30, redTo: 32,
+			yellowFrom: 32, yellowTo: 45,
+			majorTicks: ['30\xB0', '40\xB0', '50\xB0', '60\xB0', '70\xB0', '80\xB0', '90\xB0', '100\xB0', '110\xB0'],
+			minorTicks: 10
+		};
+
+        // JSONP request
+        var jsonData = $.ajax({
+          url: 'https://data.sparkfun.com/output/' + public_key + '.json',
+          data: {limit: 1},
+          dataType: 'jsonp',
+        }).done(function (results) {
+
+          var data = google.visualization.arrayToDataTable([
+			  ['Label', 'Value'],
+			  ['Zone 0', parseFloat(results[0].z0temp0)],
+			  ['Zone 1', parseFloat(results[0].z0temp1)]
+		  ]);
+
+          var gauge = new google.visualization.Gauge(document.getElementById('gauge'));
+
+          gauge.draw(data, options);
+
+        });
+
+      }
+
+    </script>
+
+  </head>
+  <body>
+	<h1>Foundry Temperature Status</h1>
+	<div id="linechart" style="width: 100%; height:250;"></div>
+	<div id="space1" style="height:20;"></div>
+	<div id="gauge" style="width: 100%;"></div>
+  </body>
+</html>
