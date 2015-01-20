@@ -165,7 +165,7 @@ class SparkFunDataEventThread(TaskThread.TaskThread):
 		global nodeData
 		print 'Running SparkFunData Thread'
 		if checkNodesForData():
-			self.setInterval(TwitterInterval)
+			self.setInterval(SparkFunDataInterval)
 			try:
 				SparkFunLog.log(*(nodeData[name] for name in nodeNames))
 			except:
