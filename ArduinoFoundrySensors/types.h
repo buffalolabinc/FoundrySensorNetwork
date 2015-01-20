@@ -9,6 +9,23 @@ typedef enum
 
 #define TEMP_PACKET 0
 
+class TempSensor
+{
+public:
+	TempSensor(int pin) : m_Sensor(pin), m_Status(DS_OK)
+	{
+	};
+
+	OneWire& GetSensor(void)					{ return m_Sensor;		}
+
+	device_status_t GetStatus(void)				{ return m_Status;		}
+	void SetStatus(device_status_t a_Status)	{ m_Status = a_Status; 	}
+
+protected:
+	OneWire m_Sensor;
+	device_status_t m_Status;
+};
+
 		
 class NodeInfo
 {
