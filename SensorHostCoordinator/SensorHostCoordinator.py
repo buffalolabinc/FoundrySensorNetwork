@@ -188,22 +188,32 @@ class TwilioEventThread(TaskThread.TaskThread):
 	def task(self):
 		print 'Running Twilio Thread'
 		target = 'Zone 1'
-		for inMessage in twilioClient.messages.list():
-			print inMessage.date_sent,inMessage.sid, inMessage.from_, inMessage.direction, inMessage.body
-#			outMessage = twilioClient.messages.create( body="Received - " + inMessage.body, to=inMessage.from_, from_="+17167144090",)
-			relayData = None
-			if str_iequal(inMessage.body, 'on'):
-				relayData = '\x00\x01'
-			elif str_iequal(inMessage.body, 'off'):
-				relayData = '\x00\x00'
-			inMessage.delete()
-#			outMessage.delete()
-			if relayData:
-				if target in nodesByName:
-					print 'Sending Packet to '
-					printAddrLong(nodesByName[target]['source_addr_long'])
-					printAddr(nodesByName[target]['source_addr'])
-					xbee.send('tx', frame_id='\x01', dest_addr_long = nodesByName[target]['source_addr_long'], dest_addr = nodesByName[target]['source_addr'], data=relayData) 
+		try:
+			for inMessage in twilioClient.messages.list():
+				print inMessage.date_sent,inMessage.sid, inMessage.from_, inMessage.direction, inMessage.body
+#				outMessage = twilioClient.messages.create( body="Received - " + inMessage.body, to=inMessage.from_, from_="+17167144090",)
+				relayData = None
+				if str_iequal(inMessage.body[:2], 'on'):
+					relayData = '\x00\x01'
+				elif str_iequal(inMessage.body[:3], 'off'):
+					relayData = '\x00\x00'
+				inMessage.delete()
+#				outMessage.delete()
+				if relayData:
+					if target in nodesByName:
+						print 'Sending Packet to '
+						printAddrLong(nodesByName[target]['source_addr_long'])
+						printAddr(nodesByName[target]['source_addr'])
+						xbee.send('tx', frame_id='\x01', dest_addr_long = nodesByName[target]['source_addr_long'], dest_addr = nodesByName[target]['source_addr'], data=relayData) 
+		except:
+				"""
+				Do something better here
+				"""
+				print 'Exception in Twilio Thread'
+				print 'Error:', sys.exc_info()[0]
+		else:
+			print 'No Exception in Twilio Thread'
+
 
 class XBEventThread(TaskThread.TaskThread):
 	def __init__(self):
